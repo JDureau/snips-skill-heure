@@ -9,12 +9,13 @@ MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 def intent_received(hermes, intent_message):
     sentence = 'Il est '
 
-    if intent_message.intent.intent_name == 'askTime':
+    if intent_message.intent.intent_name == 'Joseph:askTime':
         print(intent_message.intent.intent_name)
 
     now = datetime.now()
 
     sentence += now.hour + " heures " + now.minute
+    print(sentence)
 
     hermes.publish_end_session(intent_message.session_id, sentence)
 
