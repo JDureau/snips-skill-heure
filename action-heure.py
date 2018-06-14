@@ -14,7 +14,7 @@ def intent_received(hermes, intent_message):
 
     now = datetime.now()
 
-    sentence += now.hour + " heures " + now.minute
+    sentence += str(now.hour) + " heures " + str(now.minute)
     print(sentence)
 
     hermes.publish_end_session(intent_message.session_id, sentence)
