@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 from hermes_python.hermes import Hermes
 from datetime import datetime
+from pytz import timezone
 
 MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
@@ -42,7 +43,7 @@ def intent_received(hermes, intent_message):
     if intent_message.intent.intent_name == 'Joseph:askTime':
         print(intent_message.intent.intent_name)
 
-    now = datetime.now()
+    now = datetime.now(timezone('Europe/Paris'))
 
     sentence += verbalise_hour(now.hour) + verbalise_minute(now.minute)
     print(sentence)
