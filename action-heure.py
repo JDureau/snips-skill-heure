@@ -34,7 +34,7 @@ def verbalise_minute(i):
 	elif i == 51:
 		return "cinquante et une"
 	else:
-		return "{0} heures".format(str(i)) 
+		return "{0}".format(str(i)) 
 
 
 def intent_received(hermes, intent_message):
