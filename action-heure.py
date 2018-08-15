@@ -49,7 +49,12 @@ def intent_received(hermes, intent_message):
 		sentence += verbalise_hour(now.hour) + " " + verbalise_minute(now.minute)
 		print(sentence)
 
-		hermes.publish_end_session(intent_message.session_id, sentence)
+		hermes.publish_continue_session(intent_message.session_id, sentence, ["greetings"])
+		#hermes.publish_end_session(intent_message.session_id, sentence)
+
+	elif intent_message.intent.intent_name == 'Joseph:greetings':
+
+		hermes.publish_end_session(intent_message.session_id, "De rien!")
 
 
 with Hermes(MQTT_ADDR) as h:
