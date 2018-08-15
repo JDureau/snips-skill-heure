@@ -16,7 +16,7 @@ def verbalise_hour(i):
 	elif i == 12:
 		return "midi"
 	elif i == 21:
-		return "ving et une heures"
+		return "vingt et une heures"
 	else:
 		return "{0} heures".format(str(i)) 
 
