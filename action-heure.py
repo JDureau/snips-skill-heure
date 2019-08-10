@@ -1,65 +1,57 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from hermes_python.hermes import Hermes
+from hermes_python.ffi.utils import MqttOptions
 from datetime import datetime
 from pytz import timezone
 
-MQTT_IP_ADDR = "localhost"
-MQTT_PORT = 1883
-MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
+def verbalise_time(hours, minutes):
+    spoken_time = ''
 
+    if hours == 0:
+        spoken_time += 'minuit'
+    elif hours == 1:
+        spoken_time += 'une heure'
+    elif hours == 12:
+        spoken_time += 'midi'
+    elif hours == 21:
+        spoken_time += 'vingt et une heures'
+    else:
+        spoken_time += '{0} heures'.format(str(hours))
 
-def verbalise_hour(i):
-	if i == 0:
-		return "minuit"
-	elif i == 1:
-		return "une heure"
-	elif i == 12:
-		return "midi"
-	elif i == 21:
-		return "vingt et une heures"
-	else:
-		return "{0} heures".format(str(i)) 
+    spoken_time += ' '
 
-def verbalise_minute(i):
-	if i == 0:
-		return ""
-	elif i == 1:
-		return "une"
-	elif i == 21:
-		return "vingt et une"
-	elif i == 31:
-		return "trente et une"
-	elif i == 41:
-		return "quarante et une"
-	elif i == 51:
-		return "cinquante et une"
-	else:
-		return "{0}".format(str(i)) 
+    if minutes == 0:
+        spoken_time += ''
+    elif minutes == 1:
+        spoken_time += 'une'
+    elif minutes == 21:
+        spoken_time += 'vingt et une'
+    elif minutes == 31:
+        spoken_time += 'trente et une'
+    elif minutes == 41:
+        spoken_time += 'quarante et une'
+    elif minutes == 51:
+        spoken_time += 'cinquante et une'
+    elif minutes == 15:
+        spoken_time += 'et quart'
+    elif minutes == 30:
+        spoken_time += 'et demi'
+    else:
+        spoken_time += '{0}'.format(str(minutes))
 
+    return spoken_time
 
-def intent_received(hermes, intent_message):
+def subscribe_intent_callback(hermes, intent_message):
+    now = datetime.now(timezone('Europe/Paris'))
 
-	print()
-	print(intent_message.intent.intent_name)
-	print ()
+    sentence = 'Il est '
+    sentence += verbalise_time(now.hour, now.minute)
 
-	if intent_message.intent.intent_name == 'Joseph:askTime':
+    hermes.publish_end_session(intent_message.session_id, sentence)
 
-		sentence = 'Il est '
-		print(intent_message.intent.intent_name)
-
-		now = datetime.now(timezone('Europe/Paris'))
-
-		sentence += verbalise_hour(now.hour) + " " + verbalise_minute(now.minute)
-		print(sentence)
-
-		# hermes.publish_continue_session(intent_message.session_id, sentence, ["Joseph:greetings"])
-		hermes.publish_end_session(intent_message.session_id, sentence)
-
-	elif intent_message.intent.intent_name == 'Joseph:greetings':
-
-		hermes.publish_end_session(intent_message.session_id, "De rien!")
-
-
-with Hermes(MQTT_ADDR) as h:
-	h.subscribe_intents(intent_received).start()
+if __name__ == "__main__":
+    mqtt_opts = MqttOptions()
+    with Hermes(mqtt_options=mqtt_opts) as h:
+        h.subscribe_intent('Joseph:askTime', subscribe_intent_callback).loop_forever()
