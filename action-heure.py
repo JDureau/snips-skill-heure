@@ -9,9 +9,6 @@ from pytz import timezone
 def verbalise_time(hours, minutes):
     spoken_time = ''
 
-    if minutes in [35, 40, 45, 50, 55]:
-        hours += 1
-
     if hours == 0:
         spoken_time += 'minuit'
     elif hours == 1:
@@ -41,16 +38,6 @@ def verbalise_time(hours, minutes):
         spoken_time += 'et quart'
     elif minutes == 30:
         spoken_time += 'et demi'
-    elif minutes == 35:
-        spoken_time += 'moins vingt cinq'
-    elif minutes == 40:
-        spoken_time += 'moins vingt'
-    elif minutes == 45:
-        spoken_time += 'moins le quart'
-    elif minutes == 50:
-        spoken_time += 'moins dix'
-    elif minutes == 50:
-        spoken_time += 'moins cinq'
     else:
         spoken_time += '{0}'.format(str(minutes))
 
