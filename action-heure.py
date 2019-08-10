@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from hermes_python.hermes import Hermes
+from hermes_python.ffi.utils import MqttOptions
 from datetime import datetime
 from pytz import timezone
 
-MQTT_IP_ADDR = "localhost"
-MQTT_PORT = 1883
-MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 
 
 def verbalise_hour(i):
@@ -39,7 +37,7 @@ def verbalise_minute(i):
         return "{0}".format(str(i))
 
 
-def intent_received(hermes, intent_message):
+def subscribe_intent_callback(hermes, intent_message):
     print()
     print(intent_message.intent.intent_name)
     print()
@@ -62,5 +60,7 @@ def intent_received(hermes, intent_message):
         hermes.publish_end_session(intent_message.session_id, "De rien!")
 
 
-with Hermes(MQTT_ADDR) as h:
-    h.subscribe_intents(intent_received).start()
+if __name__ == "__main__":
+    mqtt_opts = MqttOptions()
+    with Hermes(mqtt_options=mqtt_opts) as h:
+        h.subscribe_intent('Joseph:askTime', subscribe_intent_callback).loop_forever()
