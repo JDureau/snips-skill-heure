@@ -6,59 +6,63 @@ from hermes_python.ffi.utils import MqttOptions
 from datetime import datetime
 from pytz import timezone
 
+def verbalise_time(hours, minutes):
+    spoken_time = ''
 
+    if minutes in [35, 40, 45, 50, 55]:
+        hours += 1
 
-def verbalise_hour(i):
-    if i == 0:
-        return "minuit"
-    elif i == 1:
-        return "une heure"
-    elif i == 12:
-        return "midi"
-    elif i == 21:
-        return "vingt et une heures"
+    if hours == 0:
+        spoken_time += 'minuit'
+    elif hours == 1:
+        spoken_time += 'une heure'
+    elif hours == 12:
+        spoken_time += 'midi'
+    elif hours == 21:
+        spoken_time += 'vingt et une heures'
     else:
-        return "{0} heures".format(str(i))
+        spoken_time += '{0} heures'.format(str(hours))
 
-def verbalise_minute(i):
-    if i == 0:
-        return ""
-    elif i == 1:
-        return "une"
-    elif i == 21:
-        return "vingt et une"
-    elif i == 31:
-        return "trente et une"
-    elif i == 41:
-        return "quarante et une"
-    elif i == 51:
-        return "cinquante et une"
+    spoken_time += ' '
+
+    if minutes == 0:
+        spoken_time += ''
+    elif minutes == 1:
+        spoken_time += 'une'
+    elif minutes == 21:
+        spoken_time += 'vingt et une'
+    elif minutes == 31:
+        spoken_time += 'trente et une'
+    elif minutes == 41:
+        spoken_time += 'quarante et une'
+    elif minutes == 51:
+        spoken_time += 'cinquante et une'
+    elif minutes == 15:
+        spoken_time += 'et quart'
+    elif minutes == 30:
+        spoken_time += 'et demi'
+    elif minutes == 35:
+        spoken_time += 'moins vingt cinq'
+    elif minutes == 40:
+        spoken_time += 'moins vingt'
+    elif minutes == 45:
+        spoken_time += 'moins le quart'
+    elif minutes == 50:
+        spoken_time += 'moins dix'
+    elif minutes == 50:
+        spoken_time += 'moins cinq'
     else:
-        return "{0}".format(str(i))
+        spoken_time += '{0}'.format(str(minutes))
 
+    return spoken_time
 
 def subscribe_intent_callback(hermes, intent_message):
-    print()
-    print(intent_message.intent.intent_name)
-    print()
+    now = datetime.now(timezone('Europe/Paris'))
 
-    if intent_message.intent.intent_name == 'Joseph:askTime':
+    sentence = 'Il est '
+    sentence += verbalise_time(now.hour, now.minute)
 
-        sentence = 'Il est '
-        print(intent_message.intent.intent_name)
-
-        now = datetime.now(timezone('Europe/Paris'))
-
-        sentence += verbalise_hour(now.hour) + " " + verbalise_minute(now.minute)
-        print(sentence)
-
-        # hermes.publish_continue_session(intent_message.session_id, sentence, ["Joseph:greetings"])
-        hermes.publish_end_session(intent_message.session_id, sentence)
-
-    elif intent_message.intent.intent_name == 'Joseph:greetings':
-
-        hermes.publish_end_session(intent_message.session_id, "De rien!")
-
+    hermes.publish_end_session(intent_message.session_id, sentence)
 
 if __name__ == "__main__":
     mqtt_opts = MqttOptions()
